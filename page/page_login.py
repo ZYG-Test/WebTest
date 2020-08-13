@@ -26,7 +26,7 @@ class PageLogin(Base):
     # 点击注销登录
     def login_click_out(self):
         self.base_click(page.login_out)
-
+        # self.base_opencv_click('../data/login_out.png')
 
     # 返回注销账号成功后提示信息""
     def login_assert_success_info(self):

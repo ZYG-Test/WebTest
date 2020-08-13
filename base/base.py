@@ -1,10 +1,14 @@
 import time
+
+from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support.select import Select
 import page
 
 #引用log日志器
 from tools.get_logger import GetLogger
+from tools.opencv import GraphicalLocator
+
 log =GetLogger().get_logger()
 
 class Base:
@@ -80,3 +84,17 @@ class Base:
     # 回到默认目录方法
     def base_default_content(self):
         self.driver.switch_to.default_content()
+
+    # 通过图像获取元素坐标进行定位
+    def base_opencv_click(self,image_file):
+        img_check = GraphicalLocator(image_file)
+        img_check.find_me(self.driver)
+        is_found = True if img_check.threshold['shape'] >= 0.8 and img_check.threshold['histogram'] >= 0.4 else False
+        if is_found:
+            action = ActionChains(self.driver)
+            log.info("[base]: {} :图片坐标{},{}".format(image_file,img_check.center_x, img_check.center_y))
+            action.move_by_offset(img_check.center_x, img_check.center_y)
+            action.click()
+            action.perform()
+        else:
+            log.error("[base]: {} 图片无法识别".format(image_file))
