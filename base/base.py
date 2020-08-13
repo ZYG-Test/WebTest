@@ -1,5 +1,4 @@
 import time
-
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support.select import Select
@@ -87,6 +86,7 @@ class Base:
 
     # 通过图像获取元素坐标进行定位
     def base_opencv_click(self,image_file):
+        # 导入需要定位的图片地址
         img_check = GraphicalLocator(image_file)
         img_check.find_me(self.driver)
         is_found = True if img_check.threshold['shape'] >= 0.8 and img_check.threshold['histogram'] >= 0.4 else False

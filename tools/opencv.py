@@ -17,7 +17,7 @@ class GraphicalLocator(object):
 
     def __init__(self, img_path):
         self.locator = img_path
-        # x, y position in pixels counting from left, top corner
+        # 从左上角算起的x，y位置（以像素为单位）
         self.x = None
         self.y = None
         self.img = cv2.imread(img_path)
@@ -35,45 +35,45 @@ class GraphicalLocator(object):
 
 
     def find_me(self, drv):
-        # Clear last found coordinates
+        # 清除最后找到的坐标
         self.x = self.y = None
         # Get current screenshot of a web page
         scr = drv.get_screenshot_as_png()
-        # Convert img to BytesIO
+        # 获取网页的当前屏幕截图
         scr = Image.open(BytesIO(scr))
-        # Convert to format accepted by OpenCV
+        # 转换为OpenCV接受的格式
         scr = numpy.asarray(scr, dtype=numpy.float32).astype(numpy.uint8)
-        # Convert image from BGR to RGB format
+        # 将图像从BGR转换为RGB格式
         scr = cv2.cvtColor(scr, cv2.COLOR_BGR2RGB)
 
-        # Image matching works only on gray images
-        # (color conversion from RGB/BGR to GRAY scale)
+        # 图像匹配仅适用于灰色图像
+        # （从RGB / BGR到灰度的颜色转换）
         img_match = cv2.minMaxLoc(
             cv2.matchTemplate(cv2.cvtColor(scr, cv2.COLOR_RGB2GRAY),
                               cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY),
                               cv2.TM_CCOEFF_NORMED))
 
-        # Calculate position of found element
+        # 计算找到的元素的位置
         self.x = img_match[3][0]
         self.y = img_match[3][1]
 
-        # From full screenshot crop part that matches template image
+        # 从与模板图像匹配的完整屏幕截图裁剪部分
         scr_crop = scr[self.y:(self.y + self.height),
                    self.x:(self.x + self.width)]
 
-        # Calculate colors histogram of both template
-        # and matching images and compare them
+        # 计算两个模板的颜色直方图
+        # 并匹配图像并进行比较
         scr_hist = cv2.calcHist([scr_crop], [0, 1, 2], None,
                                 [8, 8, 8], [0, 256, 0, 256, 0, 256])
         img_hist = cv2.calcHist([self.img], [0, 1, 2], None,
                                 [8, 8, 8], [0, 256, 0, 256, 0, 256])
         comp_hist = cv2.compareHist(img_hist, scr_hist,
                                     cv2.HISTCMP_CORREL)
-        # Save threshold matches of: graphical image and image histogram
+        # 保存阈值匹配项：图形图像和图像直方图
         self.threshold = {'shape': round(img_match[1], 2),
                           'histogram': round(comp_hist, 2)}
 
-        # Return image with blue rectangle around match
+        # 返回匹配周围带有蓝色矩形的图像
         return cv2.rectangle(scr, (self.x, self.y),
                              (self.x + self.width, self.y + self.height),
                              (0, 0, 255), 2)
