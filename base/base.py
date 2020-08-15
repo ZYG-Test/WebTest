@@ -60,7 +60,7 @@ class Base:
     # 截图 方法封装
     def base_get_image(self):
         log.info("[base]: 用例执行失败开始截图")
-        self.driver.get_screenshot_as_file("../image/{}.png".format(time.strftime("%Y_%m_%d %H_%M_%S")))
+        self.driver.get_screenshot_as_file("../report/image/{}.png".format(time.strftime("%Y_%m_%d %H_%M_%S")))
 
     #判断元素是否存在 方法封装
     def base_element_is_exist(self,loc):
@@ -98,3 +98,34 @@ class Base:
             action.perform()
         else:
             log.error("[base]: {} 图片无法识别".format(image_file))
+
+
+    # 滑动封装，默认向左滑动
+    def base_swipe(self,num,swipe=None):
+        x = self.driver.get_window_size()['width']
+        y = self.driver.get_window_size()['height']
+        for i in range(num):
+            if swipe == 'left':
+                # 向左滑动
+                x = int(x * 0.5)
+                y1 = int(y * 0.25)
+                y2 = int(x * 0.95)
+                self.driver.swipe(x, y1, x, y2, 1500)
+            # 向右滑动
+            elif swipe == 'right':
+                x1 = int(x * 0.25)
+                y = int(y * 0.5)
+                x2 = int(x * 0.95)
+                self.driver.swipe(x1, y, x2, y, 1500)
+            # 向上滑动
+            elif swipe == 'up':
+                x = int(x * 0.5)
+                y1 = int(y * 0.95)
+                y2 = int(x * 0.25)
+                self.driver.swipe(x, y1, x, y2, 1500)
+            else:
+                # 向左滑动
+                x1 = int(x * 0.9)
+                y = int(y * 0.5)
+                x2 = int(x * 0.1)
+                self.driver.swipe(x1, y, x2, y, 1500)
