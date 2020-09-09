@@ -68,7 +68,7 @@ class PageLogin(Base):
 
 
 if __name__ == '__main__':
-    from base.driver import GetDriver
+    from base.webDriver import GetDriver
     login = PageLogin(GetDriver().get_web_driver())
     login.page_success_login("18142651996@vip.com", "aaa111")
     login.login_out()

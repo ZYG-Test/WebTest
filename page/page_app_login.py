@@ -1,5 +1,8 @@
 from selenium.webdriver.common.by import By
 from base.base import Base
+#引用log日志器
+from tools.get_logger import GetLogger
+log =GetLogger().get_logger()
 
 class PageAppLogin(Base):
 
@@ -10,6 +13,12 @@ class PageAppLogin(Base):
     nextBtn=By.ID,"com.zybitech.juancash:id/btn"
     # text文本定位可用余额
     available_balance=By.XPATH,"//*[@text='可用余额']"
+    # 已在其他手机上登录提示：
+    login_content = By.ID, "com.zybitech.juancash:id/tv_content"
+    # 确定按钮
+    login_content_ok = By.ID, "com.zybitech.juancash:id/bt_ok"
+
+
 
     '''登录页面相关操作'''
     # 滑动启动页介绍，点击开始按钮
@@ -27,11 +36,14 @@ class PageAppLogin(Base):
 
     # 点击下一步按钮、
     def page_nextBtn(self):
-        self.base_click(self.nextBtn)
+        # self.base_click(self.nextBtn)
+        self.base_find_image("../data/nextBtn.png")
 
     # 获取可用余额信息，断言是否登录成功
     def page_get_balance_info(self):
         return self.base_get_text(self.available_balance)
+
+
 
     # 登录业务组合
     def page_login(self,phone,code):
@@ -43,3 +55,18 @@ class PageAppLogin(Base):
         self.page_code(code)
         # 4、点击下一步
         self.page_nextBtn()
+
+    # 登录成功业务->给其他用例调用
+    def page_login_success(self,phone,code):
+        try:
+            self.page_login(phone,code)
+            # 判断已在其他手机上登录提示是否存在，存在点击确定按钮重新登录，不存在则不进行任何操作
+            if self.base_element_is_exist(self.login_content):
+                self.base_click(self.login_content_ok)
+                self.page_login(phone, code)
+            else:
+                pass
+        except Exception as msg:
+            log.error("[page_app_login:{}]".format(msg))
+
+        

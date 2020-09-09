@@ -1,7 +1,7 @@
 #导包
 import unittest
 from parameterized import parameterized
-from base.driver import GetDriver
+from base.webDriver import webDriver
 from page.page_login import PageLogin
 
 #引用log日志器
@@ -27,7 +27,7 @@ class TestLogin(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # 获取driver
-        cls.driver=GetDriver().get_web_driver()
+        cls.driver=webDriver().get_web_driver()
         # # login实例化
         cls.login=PageLogin(cls.driver)
         # 点击会员中心
@@ -40,7 +40,7 @@ class TestLogin(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         # 关闭driver
-        GetDriver().quit_driver()
+        webDriver().quit_driver()
 
     # 登录测试用例
     @parameterized.expand(get_data())

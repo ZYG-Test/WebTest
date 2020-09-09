@@ -4,7 +4,7 @@ import time
 from tools.BStestRunner import BSTestRunner
 
 # 定义测试套件为所有测试用例
-suite = unittest.defaultTestLoader.discover("./")
+suite = unittest.defaultTestLoader.discover("./",pattern="test_shop*.py")
 
 #报告生成目录及文件名称
 dir_path = '../report/{}.html'.format(time.strftime("%Y_%m_%d %H_%M_%S"))
